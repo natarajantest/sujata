@@ -1,45 +1,66 @@
-package initialize;
-
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.By.ById;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class SpiceJet {
+public class Assignment {
 
 	public static void main(String[] args) throws InterruptedException {
+
 		WebDriver driver = new ChromeDriver();
-		WebDriverWait wait=new WebDriverWait(driver,30);
-		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-		driver.get("http://www.spicejet.com");
-		driver.findElement(By.xpath("(//span[@class='red-arrow-btn'])[1]")).click();
-		driver.findElement(By.linkText("Mumbai (BOM)")).click();
+		driver.manage().window().maximize();
+		driver.get("https://demo.openemr.io/d/openemr/interface/login/login.php?site=default");
 
-		driver.findElement(By.xpath("(//span[@class='red-arrow-btn'])[2]")).click();
-		driver.findElement(By.linkText("Dehradun (DED)")).click();
+		// login
+		driver.findElement(By.id("authUser")).clear();
+		driver.findElement(By.id("authUser")).sendKeys("admin");
+		driver.findElement(By.id("clearPass")).clear();
+		driver.findElement(By.id("clearPass")).sendKeys("pass");
+		driver.findElement(By.xpath("//i[@class='fa fa-sign-in']")).click();
 
+		// navigate
 		Actions act = new Actions(driver);
-		act.moveToElement(driver.findElement(By.linkText("19"))).build().perform();
-		driver.findElement(By.linkText("19")).click();
+		act.moveToElement(driver.findElement(By.xpath("//div[text()='Patient/Client']"))).build().perform();
+		act.click(driver.findElement(By.xpath("//div[text()='New/Search']"))).build().perform();
+
+		// switchwindow
+		driver.switchTo().frame(driver.findElement(By.xpath("//iframe[@name='pat']")));
+
+		// fname & lname
+		driver.findElement(By.xpath("//input[@id='form_fname']")).sendKeys("admin");
+		driver.findElement(By.id("form_lname")).sendKeys("123");
+
+		// DOB
+		driver.findElement(By.id("form_DOB")).click();
+		driver.findElement(By.xpath("//div[text()='17']")).click();
+
+		// sex
+		Select s = new Select(driver.findElement(By.id("form_sex")));
+		s.selectByIndex(1);
+
+		//create new patient
+		driver.findElement(By.id("create")).click();
+		driver.switchTo().defaultContent();
 		
-		Thread.sleep(3000);
-//		act.moveToElement(driver.findElement(By.linkText("25"))).build().perform(); //	driver.findElement(By.linkText("25")).click();
+		driver.switchTo().frame(driver.findElement(By.xpath("//iframe[@class='embed-responsive-item modalIframe']")));
+		driver.findElement(By.xpath("//input[@value='Confirm Create New Patient']")).click();
+		
+		Thread.sleep(8000);
+		driver.switchTo().alert().accept();
+		
+	    driver.findElement(By.xpath("//div[@class='closeDlgIframe']")).click();
+		   // driver.switchTo().frame(driver.findElement(By.name("timeout")));
+		   // Actions act1=new Actions(driver);
+		    act.moveToElement(driver.findElement(By.xpath("//div[@class='menuSection userSection']"))).build().perform();
+		    driver.findElement(By.xpath("//ul//li[text()='Logout']")).click();
 
-	driver.findElement(By.className("paxinfo")).click();
-	for(int i=0;i<=3;i++)
-	{  
-	driver.findElement(By.id("hrefIncAdt")).click();
-	i=i+1;
-	}	
-	Thread.sleep(3000);
-	driver.findElement(By.id("btnclosepaxoption")).click();
-	Select sc=new Select(driver.findElement(By.id("ctl00_mainContent_DropDownListCurrency"))); sc.selectByValue("AED"); Thread.sleep(3000); driver.findElement(By.id("ctl00_mainContent_btn_FindFlights")).click();
+		    Thread.sleep(3000);
+		    driver.quit();
+		}
 
-	}
 	}
